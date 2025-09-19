@@ -885,11 +885,37 @@
         const chatButton = document.querySelector('#sendBtn');
         const chatMessages = document.querySelector('.chat-messages');
 
+        // =========================
+        // LocalStorage chat history
+        // =========================
+        let chatHistory = loadChatHistory();
+
+        function saveChatHistory(messages) {
+            localStorage.setItem("chatHistory", JSON.stringify(messages));
+        }
+
+        function loadChatHistory() {
+            const data = localStorage.getItem("chatHistory");
+            return data ? JSON.parse(data) : [];
+        }
+
+        function restoreChatHistory() {
+            chatMessages.innerHTML = ""; // clear
+            chatHistory.forEach(msg => {
+                addMessage(msg.text, msg.sender);
+            });
+        }
+
+        // ---- Restore chat on reload ----
+        window.addEventListener('load', restoreChatHistory);
+
+        // ---- Events ----
         chatButton.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
 
+        // ---- Send message ----
         async function sendMessage() {
             const message = chatInput.value.trim();
             if (!message) return;
@@ -902,10 +928,11 @@
             const typingEl = addMessage('...', 'ai', true);
 
             try {
-                const resp = await fetch('/api/chat', {
+                const url = "http://localhost:5000/api/ask";
+                const resp = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message })  //convert a JavaScript object or value into a JSON string
+                    body: JSON.stringify({ query: message })
                 });
 
                 const data = await resp.json();
@@ -917,7 +944,11 @@
                     return;
                 }
 
-                const reply = data.reply ?? "Sorry, I didn't get a response.";
+                const reply = (data.status == 'success') 
+                    ? data.answer 
+                    : (data.answer_en || "Sorry, I didn't get a response.");
+                    console.log({reply});
+                    
                 addMessage(reply, 'ai');
             } catch (err) {
                 if (typingEl) typingEl.remove();
@@ -926,48 +957,31 @@
             }
         }
 
-        // modified addMessage to optionally return the element (for typing removal)
-        function addMessage(text, type, returnElement = false) {
+        function addMessage(text, sender, isTemp = false) {
             const messageEl = document.createElement('div');
             messageEl.classList.add('message');
-            messageEl.classList.add(type === 'user' ? 'user-message' : 'ai-message');
+            messageEl.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
             messageEl.textContent = text;
 
             chatMessages.appendChild(messageEl);
             chatMessages.scrollTop = chatMessages.scrollHeight; // auto-scroll
 
-            if (returnElement) return messageEl;
-            return null;
+            if (!isTemp) {
+                chatHistory.push({ sender, text });
+                saveChatHistory(chatHistory);
+            }
+
+            return isTemp ? messageEl : null;
         }
-        
-    // // =========================
-    // // Prewritten prompt click
-    // // =========================
-    // document.querySelectorAll('.prompt-chip').forEach(chip => {
-    //     chip.addEventListener('click', () => {
-    //         const promptText = chip.textContent.trim();
-    //         chatInput.value = promptText;   // put it in input
-    //         chatInput.focus();
-
-    //         // auto-send immediately OR wait for user to press Enter
-    //         // If you want auto-send, uncomment below line:
-    //         // sendMessage();
-    //     });
-    // });
-
-
-
-
-
-    // =========================
-    // Prewritten prompt auto-send
-    // =========================
-    document.querySelectorAll('.prompt-chip').forEach(chip => {
-        chip.addEventListener('click', () => {
-            chatInput.value = chip.textContent.trim(); // fill input
-            sendMessage(); // auto-send immediately
+        // =========================
+        // Prewritten prompt auto-send
+        // =========================
+        document.querySelectorAll('.prompt-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                chatInput.value = chip.textContent.trim(); // fill input
+                sendMessage(); // auto-send immediately
+            });
         });
-    });
     </script>
 
 
