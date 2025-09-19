@@ -1,0 +1,33 @@
+{
+  "PersonalInformation": {
+    "FullName": "Ramesh Kumar",
+    "AadhaarNumber": "123456789012",
+    "MobileNumber": "9876543210",
+    "Category": "Small Farmer"
+  },
+  "LandDetails": {
+    "State": "Kerala",
+    "District": "Thrissur",
+    "TotalLandArea_acres": 3.5,
+    "IrrigatedLand_acres": 2,
+    "LandType": "Owned",
+    "SoilType": "Black Soil"
+  },
+  "CropDetails": {
+    "CurrentCrops": [
+      "Rice",
+      "Coconut"
+    ],
+    "OrganicFarming": "Yes",
+    "LivestockOwned": [
+      "Cattle",
+      "Poultry"
+    ]
+  },
+  "EconomicStatus": {
+    "AnnualIncome": 180000,
+    "FamilySize": 5,
+    "BPLCardHolder": "No",
+    "PMKisanBeneficiary": "Yes"
+  }
+}

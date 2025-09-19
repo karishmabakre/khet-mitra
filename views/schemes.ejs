@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhetMitra | Subsidy Eligibility</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+         .crop-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            transition: background 0.5s ease;
+        }
+        
+        .gradient-bg:hover {
+            background: linear-gradient(135deg, #e6f0ff 0%, #b8c6db 100%);
+        }
+        
+        .scheme-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .scheme-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+        
+        .progress-bar {
+            transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .language-selector {
+            transition: all 0.3s ease;
+        }
+        
+        .language-selector:hover {
+            transform: scale(1.05) rotate(2deg);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .btn-hover-effect {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transform: perspective(1px) translateZ(0);
+        }
+        
+        .btn-hover-effect:hover {
+            transform: perspective(1px) translateZ(0) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .floating-help {
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .floating-help:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .testimonial-card {
+            transition: all 0.4s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .form-input {
+            transition: all 0.3s ease;
+            transform-origin: left;
+        }
+        
+        .form-input:focus {
+            transform: scaleX(1.01);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .nav-item {
+            position: relative;
+        }
+        
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover::after {
+            width: 100%;
+        }
+        
+        .app-download-btn {
+            transition: all 0.3s ease;
+            transform: perspective(1px) translateZ(0);
+        }
+        
+        .app-download-btn:hover {
+            transform: perspective(1px) translateZ(0) scale(1.05) rotate(2deg);
+        }
+        
+        .partner-logo {
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            filter: grayscale(100%);
+        }
+        
+        .partner-logo:hover {
+            filter: grayscale(0%);
+            transform: scale(1.1);
+        }
+        
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-3px) rotate(5deg);
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 scroll-smooth">
+
+      <!-- Navigation -->
+<nav class="absolute top-0 left-0 w-full text-white shadow-lg z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-xl">KhetMitra</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+            <a href="/landing" class="hover:text-yellow-300">Home</a>
+              <a href="/chatbot" class="hover:text-yellow-300">Chatbot</a>
+              <a href="/weatherCrop" class="hover:text-yellow-300">Weather & Crop Calendar</a>
+              <a href="/schemes" class="text-yellow-300">Subsidy Eligibility</a>
+              <a href="/marketPrice" class="hover:text-yellow-300">Market Prices</a>
+        </div>
+        <button class="md:hidden focus:outline-none" id="menu-btn">
+            <i data-feather="menu"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="crop-bg text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4" data-aos="fade-down">Discover Government Subsidies for Farmers        </h1>
+        <p class="text-xl mb-8 max-w-2xl mx-auto" data-aos="fade-up">
+            Check your eligibility for 200+ government schemes in just 5 minutes and apply directly through our portal.
+        </p>
+        <!-- <button class="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold py-3 px-6 rounded-full shadow-lg transition duration-300" data-aos="zoom-in">
+            Get Started <i data-feather="arrow-right" class="ml-2 inline"></i>
+        </button> -->
+    </div>
+</header>
+    <!-- Stats Section -->
+    <!-- <section class="bg-white py-8" data-aos="fade-up" data-aos-duration="600">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                <div class="bg-green-50 p-4 rounded-lg transform transition-all duration-300 hover:scale-105">
+                    <div class="text-3xl font-bold text-green-700">200+</div>
+                    <div class="text-gray-600">Schemes</div>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg transform transition-all duration-300 hover:scale-105">
+                    <div class="text-3xl font-bold text-blue-700">10M+</div>
+                    <div class="text-gray-600">Farmers Helped</div>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg transform transition-all duration-300 hover:scale-105">
+                    <div class="text-3xl font-bold text-yellow-700">₹5000Cr+</div>
+                    <div class="text-gray-600">Benefits Claimed</div>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg transform transition-all duration-300 hover:scale-105">
+                    <div class="text-3xl font-bold text-purple-700">29</div>
+                    <div class="text-gray-600">States Covered</div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- How It Works -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8" data-aos="fade-up">How Krishi Sahay Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center transform transition-all duration-300 hover:shadow-xl" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transform transition-all duration-300 hover:rotate-12">
+                        <i class="fas fa-user-check text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Create Profile</h3>
+                    <p class="text-gray-600">Enter your personal, land and crop details to create your farmer profile.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center transform transition-all duration-300 hover:shadow-xl" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transform transition-all duration-300 hover:rotate-12">
+                        <i class="fas fa-search text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Check Eligibility</h3>
+                    <p class="text-gray-600">Our system checks your eligibility across all government schemes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md text-center transform transition-all duration-300 hover:shadow-xl" data-aos="fade-up" data-aos-delay="300">
+                    <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transform transition-all duration-300 hover:rotate-12">
+                        <i class="fas fa-file-alt text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2">Apply Online</h3>
+                    <p class="text-gray-600">Apply directly through our portal with pre-filled forms.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Eligibility Checker Form -->
+    <section class="py-12 bg-white">
+        <div class="max-w-5xl mx-auto my-10">
+    
+        <!-- Header -->
+        <div class="bg-green-700 text-white p-4 rounded-t-lg shadow">
+          <h2 class="text-xl font-bold">Subsidy Eligibility Checker</h2>
+        </div>
+    
+       
+        <!-- Form Container -->
+<div class="bg-white border border-gray-200 rounded-b-lg p-6 shadow-md">
+    <form id="schemeForm" class="space-y-10">
+  
+      <!-- Row 1 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 1. Finance, Credit, and Income Support -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <span class="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">1</span>
+            Finance, Credit, and Income Support
+          </h3>
+          <select class="w-full border rounded-lg px-4 py-2">
+            <option value="">Select Sub-Category</option>
+            <option>Loans & Credit</option>
+            <option>Direct Income Support</option>
+            <option>Agri-Infrastructure Finance</option>
+            <option>Subsidies</option>
+            <option>Microfinance & Self-Help Groups (SHGs)</option>
+          </select>
+        </div>
+  
+        <!-- 2. Crop and Farm Management -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <span class="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">2</span>
+            Crop and Farm Management
+          </h3>
+          <select class="w-full border rounded-lg px-4 py-2">
+            <option value="">Select Sub-Category</option>
+            <option>Crops</option>
+            <option>Seeds</option>
+            <option>Fertilizers & Pesticides</option>
+            <option>Irrigation</option>
+            <option>Soil and Water Conservation</option>
+            <option>Organic Farming</option>
+            <option>Crop Protection</option>
+            <option>Integrated Farming Systems (IFS)</option>
+          </select>
+        </div>
+      </div>
+  
+      <!-- Row 2 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 3. Machinery and Infrastructure -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <span class="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">3</span>
+            Machinery and Infrastructure
+          </h3>
+          <select class="w-full border rounded-lg px-4 py-2">
+            <option value="">Select Sub-Category</option>
+            <option>Agricultural Machinery</option>
+            <option>Storage</option>
+            <option>Post-Harvest Infrastructure</option>
+            <option>Cold Chain & Value Addition Units</option>
+            <option>Renewable Energy for Agriculture</option>
+          </select>
+        </div>
+  
+        <!-- 4. Allied Agricultural Sectors -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <span class="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">4</span>
+            Allied Agricultural Sectors
+          </h3>
+          <select class="w-full border rounded-lg px-4 py-2">
+            <option value="">Select Sub-Category</option>
+            <option>Animal Husbandry</option>
+            <option>Dairy</option>
+            <option>Fisheries</option>
+            <option>Horticulture</option>
+            <option>Floriculture</option>
+            <option>Sericulture (Silk Farming)</option>
+            <option>Poultry</option>
+            <option>Beekeeping</option>
+          </select>
+        </div>
+      </div>
+  
+      <!-- Row 3 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 5. Marketing and Trade -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <span class="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">5</span>
+            Marketing and Trade
+          </h3>
+          <select class="w-full border rounded-lg px-4 py-2">
+            <option value="">Select Sub-Category</option>
+            <option>Marketing & Prices</option>
+            <option>Agri-Processing & Value Addition</option>
+            <option>Export and Trade Promotion</option>
+            <option>Farmer Producer Organizationsn</option>
+          </select>
+        </div>
+  
+        <!-- 6. Risk Management and Support Services -->
+        <div>
+          <h3 class="text-lg font-semibold mb-4 flex items-center">
+            <span class="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">6</span>
+            Risk Management and Support Services
+          </h3>
+          <select class="w-full border rounded-lg px-4 py-2">
+            <option value="">Select Sub-Category</option>
+            <option>Crop Insurance</option>
+            <option>Research & Extension Services</option>
+            <option>Quality Certification & Standards</option>
+            <option>Weather and Climate Services</option>
+            <option>Disaster Relief & Compensatio</option>
+          </select>
+        </div>
+      </div>
+    
+       <!-- Submit -->
+<div class="flex justify-end">
+    <button id="checkEligibilityBtn" type="button" 
+      class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium">
+      Check Eligibility
+    </button>
+  </div>
+
+
+      <!-- Subsidy Eligibility Results -->
+<section id="eligibilityResults" class="py-12 bg-gray-100 hidden">
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">
+        Eligible Subsidy Schemes
+      </h2>
+  
+      <!-- Grid Layout -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  
+        <!-- Example Card -->
+        <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up">
+          <div class="flex items-center mb-4">
+            <div class="bg-yellow-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+              <i class="fas fa-rupee-sign text-yellow-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">PM-KISAN</h3>
+          </div>
+          <p class="text-gray-600 mb-4">₹6,000 annual income support for all landholding farmers.</p>
+          <div class="flex justify-between items-center">
+            <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded">Central Scheme</span>
+            <!-- <button class="text-green-600 hover:text-green-800 font-medium">Learn More →</button> -->
+          </div>
+        </div>
+  
+        <!-- Another Example -->
+        <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="200">
+          <div class="flex items-center mb-4">
+            <div class="bg-blue-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+              <i class="fas fa-umbrella text-blue-600 text-xl"></i>
+            </div>
+            <h3 class="text-xl font-semibold">PMFBY</h3>
+          </div>
+          <p class="text-gray-600 mb-4">Crop insurance with premium subsidy for farmers.</p>
+          <div class="flex justify-between items-center">
+            <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded">Central Scheme</span>
+            <!-- <button class="text-green-600 hover:text-green-800 font-medium">Learn More →</button> -->
+          </div>
+        </div>
+  
+        <!-- Add more dynamically... -->
+  
+      </div>
+    </div>
+  </section>
+
+  </div>
+          </form>
+        </div>
+    </section>
+
+    <!-- Popular Schemes -->
+    <section class="py-12 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8" data-aos="fade-up">Popular Government Schemes</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- PM-KISAN -->
+                <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-yellow-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+                            <i class="fas fa-rupee-sign text-yellow-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">PM-KISAN</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">₹6,000 annual income support for all landholding farmers.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded transform transition-all duration-300 hover:scale-105">Central Scheme</span>
+                        <button class="text-green-600 hover:text-green-800 font-medium transform transition-all duration-300 hover:translate-x-1">Learn More →</button>
+                    </div>
+                </div>
+
+                <!-- PMFBY -->
+                <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+                            <i class="fas fa-umbrella text-blue-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">PMFBY</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Crop insurance with premium subsidy for farmers.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded transform transition-all duration-300 hover:scale-105">Central Scheme</span>
+                        <button class="text-green-600 hover:text-green-800 font-medium transform transition-all duration-300 hover:translate-x-1">Learn More →</button>
+                    </div>
+                </div>
+
+                <!-- PKVY -->
+                <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-green-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+                            <i class="fas fa-leaf text-green-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">PKVY</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Organic farming support up to ₹50,000 per hectare.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded transform transition-all duration-300 hover:scale-105">Central Scheme</span>
+                        <button class="text-green-600 hover:text-green-800 font-medium transform transition-all duration-300 hover:translate-x-1">Learn More →</button>
+                    </div>
+                </div>
+
+                <!-- Solar Pump Subsidy -->
+                <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-orange-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+                            <i class="fas fa-solar-panel text-orange-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">Solar Pump Subsidy</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Up to 90% subsidy on solar-powered irrigation pumps.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded transform transition-all duration-300 hover:scale-105">State Scheme</span>
+                        <button class="text-green-600 hover:text-green-800 font-medium transform transition-all duration-300 hover:translate-x-1">Learn More →</button>
+                    </div>
+                </div>
+
+                <!-- KCC -->
+                <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-purple-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+                            <i class="fas fa-credit-card text-purple-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">Kisan Credit Card</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Credit facility up to ₹3 lakh for agricultural needs.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded transform transition-all duration-300 hover:scale-105">Central Scheme</span>
+                        <button class="text-green-600 hover:text-green-800 font-medium transform transition-all duration-300 hover:translate-x-1">Learn More →</button>
+                    </div>
+                </div>
+
+                <!-- Micro Irrigation -->
+                <div class="scheme-card bg-white p-6 rounded-lg shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-teal-100 p-3 rounded-full mr-4 transform transition-all duration-300 hover:rotate-12">
+                            <i class="fas fa-tint text-teal-600 text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold">Micro Irrigation</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Subsidy for drip and sprinkler irrigation systems.</p>
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-100 text-green-800 text-sm px-2 py-1 rounded transform transition-all duration-300 hover:scale-105">State Scheme</span>
+                        <button class="text-green-600 hover:text-green-800 font-medium transform transition-all duration-300 hover:translate-x-1">Learn More →</button>
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="text-center mt-8" data-aos="fade-up">
+                <button class="btn-hover-effect border border-green-600 text-green-600 hover:bg-green-50 px-6 py-3 rounded-lg font-medium">
+                    View All 200+ Schemes <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div> -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        KhetMitra
+                    </h3>
+                    <p class="text-green-200">Helping farmers optimize their crops with smart technology and data-driven insights.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/landing" class="text-green-200 hover:text-white">Home</a></li>
+                        <li><a href="/chatbot" class="text-green-200 hover:text-white">Chatbot</a></li>
+                        <li><a href="/weatherCrop" class="text-green-200 hover:text-white">Weather & Crop Calendar</a></li>
+                        <li><a href="/schemes" class="text-green-200 hover:text-white">Subsidy Eligibility</a></li>
+                        <li><a href="/marketPrice" class="text-green-200 hover:text-white">Market Price</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Agri Tip</h4>
+                    <p class="text-green-200">
+                        Did you know? Using organic fertilizers can improve soil health and increase crop productivity naturally.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+                    <p class="text-green-200">Toll-free: 0000-000-0000</p>
+                  
+                </div>
+            </div>
+            <div class="border-t border-green-700 mt-8 pt-8 text-center text-green-300">
+                <p>&copy; 2025 KhetMitra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Help Button -->
+    <!-- <div class="fixed bottom-6 right-6">
+        <button class="floating-help bg-green-600 hover:bg-green-700 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-headset text-xl"><a href="/chatbot"></a></i>
+        </button>
+    </div> -->
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true, 
+            mirror: false 
+        });
+        
+        // FAQ toggle functionality
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const answer = button.nextElementSibling;
+                const icon = button.querySelector('i');
+                
+                // Toggle answer visibility with animation
+                answer.classList.toggle('hidden');
+                answer.style.maxHeight = answer.classList.contains('hidden') ? '0' : answer.scrollHeight + 'px';
+                
+                // Rotate icon
+                icon.classList.toggle('transform');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+        // Set initial max-height for FAQ answers
+        document.querySelectorAll('.faq-answer').forEach(answer => {
+            answer.style.maxHeight = '0';
+            answer.style.overflow = 'hidden';
+            answer.style.transition = 'max-height 0.3s ease-out';
+        });
+
+        // Simulate loading for eligibility form
+        document.getElementById('eligibilityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state with animation
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Checking Eligibility...';
+            submitBtn.disabled = true;
+            
+            // Animate progress bar
+            const progressBar = document.querySelector('.progress-bar');
+            let progress = 20;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(progressInterval);
+                }
+                progressBar.style.width = progress + '%';
+            }, 200);
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Redirect to results page (simulated)
+                alert('Eligibility check complete! You qualify for 5 schemes with potential benefits of ₹45,000.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                progressBar.style.width = '20%';
+            }, 3000);
+        });
+
+        // State to district mapping (simplified)
+        const stateDistricts = {
+            'maharashtra': ['Nashik', 'Pune', 'Nagpur', 'Ahmednagar', 'Solapur'],
+            'punjab': ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala', 'Bathinda'],
+            'haryana': ['Faridabad', 'Gurgaon', 'Hisar', 'Rohtak', 'Karnal'],
+            'up': ['Lucknow', 'Varanasi', 'Agra', 'Kanpur', 'Meerut'],
+            'mp': ['Bhopal', 'Indore', 'Jabalpur', 'Gwalior', 'Ujjain'],
+            'karnataka': ['Bangalore', 'Mysore', 'Hubli', 'Belgaum', 'Mangalore']
+        };
+
+        // Update districts when state changes
+        document.querySelector('select').addEventListener('change', function() {
+            const state = this.value;
+            const districtSelect = document.querySelectorAll('select')[1];
+            
+            // Clear existing options with animation
+            districtSelect.classList.add('opacity-0');
+            setTimeout(() => {
+                districtSelect.innerHTML = '<option value="">Select District</option>';
+                
+                if (state && stateDistricts[state]) {
+                    // Add new options
+                    stateDistricts[state].forEach((district, index) => {
+                        setTimeout(() => {
+                            const option = document.createElement('option');
+                            option.value = district.toLowerCase();
+                            option.textContent = district;
+                            districtSelect.appendChild(option);
+                            
+                            // Animate each option
+                            option.style.opacity = '0';
+                            option.style.transform = 'translateY(10px)';
+                            setTimeout(() => {
+                                option.style.opacity = '1';
+                                option.style.transform = 'translateY(0)';
+                                option.style.transition = 'all 0.3s ease';
+                            }, index * 50);
+                        }, 0);
+                    });
+                }
+                
+                districtSelect.classList.remove('opacity-0');
+            }, 300);
+        });
+        
+        // Add hover effect to all buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                button.classList.add('transform', 'scale-105');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('transform', 'scale-105');
+            });
+        });
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+
+    <script>
+    document.getElementById("checkEligibilityBtn").addEventListener("click", function (e) {
+      e.preventDefault(); // prevent page reload
+      const resultsSection = document.getElementById("eligibilityResults");
+      resultsSection.classList.remove("hidden");
+      resultsSection.scrollIntoView({ behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>

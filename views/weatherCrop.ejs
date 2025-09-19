@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhetMitra | Weather and Crop Calendar</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FullCalendar (AdminLTE uses FullCalendar under the hood) -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <style>
+        
+        .crop-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+        .event-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+        .calendar-day:hover {
+            transform: scale(1.05);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+   <!-- Navigation -->
+<nav class="absolute top-0 left-0 w-full text-white shadow-lg z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-xl">KhetMitra</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+            <a href="/landing" class="hover:text-yellow-300">Home</a>
+            <a href="/chatbot" class="hover:text-yellow-300">Chatbot</a>
+            <a href="/weatherCrop" class="text-yellow-300">Weather & Crop Calendar</a>
+            <a href="/schemes" class="hover:text-yellow-300">Subsidy Eligibility</a>
+            <a href="/marketPrice" class="hover:text-yellow-300">Market Prices</a>
+        </div>
+        <button class="md:hidden focus:outline-none" id="menu-btn">
+            <i data-feather="menu"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="crop-bg text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4" data-aos="fade-down">Smart Farming Solutions</h1>
+        <p class="text-xl mb-8 max-w-2xl mx-auto" data-aos="fade-up">
+            Weather forecasts and personalized crop calendars to optimize your farming activities
+        </p>
+        <!-- <button class="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold py-3 px-6 rounded-full shadow-lg transition duration-300" data-aos="zoom-in">
+            Get Started <i data-feather="arrow-right" class="ml-2 inline"></i>
+        </button> -->
+    </div>
+</header>
+
+
+    <!-- Weather Forecast Section -->
+    <section id="weather" data-label="weather-section" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-green-800" data-aos="fade-up">Weather Forecast</h2>
+            
+            <div class="flex flex-col md:flex-row justify-center mb-8" data-aos="fade-up">
+                <div class="relative w-full md:w-1/3 mb-4 md:mb-0 md:mr-4">
+                    <input type="text" placeholder="Enter location..." class="w-full p-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <i data-feather="map-pin" class="absolute left-3 top-3.5 text-gray-400"></i>
+                </div>
+                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
+                    <i data-feather="search" class="mr-2"></i> Search
+                </button>
+            </div>
+
+            <div class="bg-gray-100 rounded-xl p-6 shadow-md" data-aos="fade-up">
+                <div class="flex justify-between items-center mb-6" data-label="weather-current-block">
+                    <div>
+                        <h3 id="weather-location" class="text-2xl font-semibold">New Delhi, India</h3>
+                        <p id="weather-date" class="text-gray-600">Today, June 15, 2023</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="weather-temperature" class="text-4xl font-bold">32°C</span>
+                        <p id="weather-condition" class="text-gray-600">Partly Cloudy</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <div class="flex space-x-4 min-w-max">
+                        <!-- Weather Card -->
+                        <div class="bg-white p-4 rounded-lg shadow text-center min-w-[120px]">
+                            <p class="font-medium">Today</p>
+                            <i data-feather="cloud" class="mx-auto my-2 text-blue-400"></i>
+                            <p class="font-bold">32°/26°</p>
+                            <p class="text-sm text-gray-600">Partly Cloudy</p>
+                        </div>
+                        <!-- Repeat for next days -->
+                        <div class="bg-white p-4 rounded-lg shadow text-center min-w-[120px]">
+                            <p class="font-medium">Tue</p>
+                            <i data-feather="sun" class="mx-auto my-2 text-yellow-400"></i>
+                            <p class="font-bold">34°/27°</p>
+                            <p class="text-sm text-gray-600">Sunny</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center min-w-[120px]">
+                            <p class="font-medium">Wed</p>
+                            <i data-feather="cloud-rain" class="mx-auto my-2 text-blue-500"></i>
+                            <p class="font-bold">30°/25°</p>
+                            <p class="text-sm text-gray-600">Rain</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center min-w-[120px]">
+                            <p class="font-medium">Thu</p>
+                            <i data-feather="cloud" class="mx-auto my-2 text-gray-400"></i>
+                            <p class="font-bold">31°/26°</p>
+                            <p class="text-sm text-gray-600">Cloudy</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center min-w-[120px]">
+                            <p class="font-medium">Fri</p>
+                            <i data-feather="sun" class="mx-auto my-2 text-yellow-400"></i>
+                            <p class="font-bold">33°/27°</p>
+                            <p class="text-sm text-gray-600">Sunny</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow text-center min-w-[120px]">
+                            <p class="font-medium">Sat</p>
+                            <i data-feather="sun" class="mx-auto my-2 text-yellow-400"></i>
+                            <p class="font-bold">35°/28°</p>
+                            <p class="text-sm text-gray-600">Sunny</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8" data-aos="fade-up">
+                    <h4 class="text-xl font-semibold mb-4">Weather Details</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  
+                      <!-- Wind Card -->
+                      <div class="relative bg-white p-4 rounded-lg shadow cursor-pointer group">
+                        <div class="flex items-center">
+                          <i data-feather="wind" class="text-blue-500 mr-2"></i>
+                          <span>Wind</span>
+                        </div>
+                        <p class="text-xl font-bold mt-2">12 km/h</p>
+                  
+                        <!-- Tooltip (below) -->
+                        <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-max 
+                                    bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-lg 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Data may not be 100% accurate
+                        </div>
+                      </div>
+                  
+                      <!-- Humidity Card -->
+                      <div class="relative bg-white p-4 rounded-lg shadow cursor-pointer group">
+                        <div class="flex items-center">
+                          <i data-feather="droplet" class="text-blue-300 mr-2"></i>
+                          <span>Humidity</span>
+                        </div>
+                        <p class="text-xl font-bold mt-2">65%</p>
+                        <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-max 
+                                    bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-lg 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Data may not be 100% accurate
+                        </div>
+                      </div>
+                  
+                      <!-- Visibility Card -->
+                      <div class="relative bg-white p-4 rounded-lg shadow cursor-pointer group">
+                        <div class="flex items-center">
+                          <i data-feather="eye" class="text-gray-500 mr-2"></i>
+                          <span>Visibility</span>
+                        </div>
+                        <p class="text-xl font-bold mt-2">10 km</p>
+                        <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-max 
+                                    bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-lg 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Data may not be 100% accurate
+                        </div>
+                      </div>
+                  
+                      <!-- Pressure Card -->
+                      <div class="relative bg-white p-4 rounded-lg shadow cursor-pointer group">
+                        <div class="flex items-center">
+                          <i data-feather="bar-chart-2" class="text-green-500 mr-2"></i>
+                          <span>Pressure</span>
+                        </div>
+                        <p class="text-xl font-bold mt-2">1012 hPa</p>
+                        <div class="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-max 
+                                    bg-gray-800 text-white text-sm px-3 py-1 rounded shadow-lg 
+                                    opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          Data may not be 100% accurate
+                        </div>
+                      </div>
+                  
+                    </div>
+                  </div>                  
+            </div>
+        </div>
+    </section>
+
+    <!-- Crop Calendar Section -->
+    <section id="calendar" data-label="crop-calendar-section" class="py-16 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-green-800" data-aos="fade-up">Crop Calendar</h2>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+                <!-- Crop Selection -->
+                <div class="w-full md:w-1/3" data-aos="fade-right">
+                    <div class="bg-white p-6 rounded-xl shadow-md sticky top-4" data-label="crop-controls">
+                        <h3 class="text-xl font-semibold mb-4">Select Your Crop</h3>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Crop Type</label>
+                            <select id="crop-select" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="">Select a crop</option>
+                                <option value="wheat">Wheat</option>
+                                <option value="rice">Rice</option>
+                                <option value="corn">Corn</option>
+                                <option value="soybean">Soybean</option>
+                                <option value="tomato">Tomato</option>
+                                <option value="potato">Potato</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2">Planting Date</label>
+                            <input type="date" id="planting-date" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        
+                        <button id="generate-calendar" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                            Generate Calendar
+                        </button>
+                        
+                        <div id="crop-details" class="mt-6 hidden">
+                            <h4 class="font-semibold mb-2">Crop Information</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <span class="event-dot bg-blue-500"></span>
+                                    <span>Planting</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="event-dot bg-green-500"></span>
+                                    <span>Fertilization</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="event-dot bg-red-500"></span>
+                                    <span>Pesticide Application</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="event-dot bg-yellow-500"></span>
+                                    <span>Harvesting</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Calendar Display (replaced with AdminLTE/FullCalendar) -->
+                <div class="w-full md:w-2/3" data-aos="fade-left">
+                    <div class="bg-white p-6 rounded-xl shadow-md" data-label="calendar-container">
+                        <div id="fc-calendar" data-label="fullcalendar-root"></div>
+                        <div id="calendar-events" data-label="upcoming-events" class="mt-8 hidden">
+                            <h4 class="text-lg font-semibold mb-4">Upcoming Events</h4>
+                            <div id="events-list" data-label="events-list" class="space-y-3">
+                                <!-- Events will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+                    <div id="crop-guide" data-label="crop-guide" class="mt-6 bg-white p-6 rounded-xl shadow-md hidden" data-aos="fade-up">
+                        <h3 class="text-xl font-semibold mb-4">Tomato Growing Guide</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <h4 class="font-medium text-green-700">Planting</h4>
+                                <p class="text-gray-700">Plant seeds indoors 6-8 weeks before last frost date. Transplant seedlings when they have 3-4 leaves and soil temperature is above 15°C.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-green-700">Fertilization Schedule</h4>
+                                <ul class="list-disc pl-5 text-gray-700">
+                                    <li>At planting: Apply balanced fertilizer (10-10-10)</li>
+                                    <li>3 weeks after planting: Side-dress with nitrogen-rich fertilizer</li>
+                                    <li>When first fruits appear: Apply phosphorus-rich fertilizer</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-green-700">Pest Control</h4>
+                                <p class="text-gray-700">Watch for aphids, whiteflies, and tomato hornworms. Apply neem oil or insecticidal soap as needed. Rotate crops annually to prevent disease.</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-green-700">Harvesting</h4>
+                                <p class="text-gray-700">Harvest tomatoes when they are fully colored but still firm. Typically 60-85 days after transplanting depending on variety.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Crop Information Section -->
+<section id="crops" class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center mb-12 text-green-800" data-aos="fade-up">Popular Crops</h2>
+  
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Crop Card 1 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition duration-300 flex flex-col" data-aos="zoom-in">
+          <img src="http://static.photos/agriculture/640x360/1" alt="Wheat" class="w-full h-48 object-cover">
+          <div class="p-6 flex flex-col flex-1">
+            <div>
+              <h3 class="text-xl font-semibold mb-2">Wheat</h3>
+              <p class="text-gray-600">A staple food grain grown in temperate climates worldwide.</p>
+            </div>
+            <!-- Bottom row -->
+            <div class="flex justify-between text-sm text-gray-500 mt-auto pt-4">
+              <span><i data-feather="clock" class="inline mr-1"></i> 120-150 days</span>
+              <span><i data-feather="thermometer" class="inline mr-1"></i> 15-25°C</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Crop Card 2 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition duration-300 flex flex-col" data-aos="zoom-in" data-aos-delay="100">
+          <img src="http://static.photos/agriculture/640x360/2" alt="Rice" class="w-full h-48 object-cover">
+          <div class="p-6 flex flex-col flex-1">
+            <div>
+              <h3 class="text-xl font-semibold mb-2">Rice</h3>
+              <p class="text-gray-600">The most important staple food for a large part of the world's population.</p>
+            </div>
+            <!-- Bottom row -->
+            <div class="flex justify-between text-sm text-gray-500 mt-auto pt-4">
+              <span><i data-feather="clock" class="inline mr-1"></i> 90-150 days</span>
+              <span><i data-feather="thermometer" class="inline mr-1"></i> 20-35°C</span>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Crop Card 3 -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition duration-300 flex flex-col" data-aos="zoom-in" data-aos-delay="200">
+          <img src="http://static.photos/agriculture/640x360/3" alt="Tomato" class="w-full h-48 object-cover">
+          <div class="p-6 flex flex-col flex-1">
+            <div>
+              <h3 class="text-xl font-semibold mb-2">Tomato</h3>
+              <p class="text-gray-600">A widely cultivated fruit/vegetable with numerous varieties.</p>
+            </div>
+            <!-- Bottom row -->
+            <div class="flex justify-between text-sm text-gray-500 mt-auto pt-4">
+              <span><i data-feather="clock" class="inline mr-1"></i> 60-85 days</span>
+              <span><i data-feather="thermometer" class="inline mr-1"></i> 18-27°C</span>
+            </div>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </section>  
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        KhetMitra
+                    </h3>
+                    <p class="text-green-200">Helping farmers optimize their crops with smart technology and data-driven insights.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/landing" class="text-green-200 hover:text-white">Home</a></li>
+                        <li><a href="/chatbot" class="text-green-200 hover:text-white">Chatbot</a></li>
+                        <li><a href="/weatherCrop" class="text-green-200 hover:text-white">Weather & Crop Calendar</a></li>
+                        <li><a href="/schemes" class="text-green-200 hover:text-white">Subsidy Eligibility</a></li>
+                        <li><a href="/marketPrice" class="text-green-200 hover:text-white">Market Price</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Smart Farming</h4>
+                    <p class="text-green-200">
+                        Monitor soil moisture regularly. Efficient irrigation saves water and boosts crop yield.
+                    </p>
+                </div>                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+                    <p class="text-green-200">Toll-free: 0000-000-0000</p>
+                
+                </div>
+            </div>
+            <div class="border-t border-green-700 mt-8 pt-8 text-center text-green-300">
+                <p>&copy; 2025 KhetMitra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS and Feather Icons
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+        feather.replace();
+        
+        // Mobile menu toggle
+        document.getElementById('menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Calendar functionality (AdminLTE-style via FullCalendar)
+        document.addEventListener('DOMContentLoaded', function() {
+            const cropSelect = document.getElementById('crop-select');
+            const plantingDate = document.getElementById('planting-date');
+            const generateBtn = document.getElementById('generate-calendar');
+            const cropDetails = document.getElementById('crop-details');
+            const calendarEvents = document.getElementById('calendar-events');
+            const cropGuide = document.getElementById('crop-guide');
+            const calendarEl = document.getElementById('fc-calendar');
+            
+            let selectedCrop = '';
+            let plantingDateValue = '';
+            
+            // Set default planting date to today
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            plantingDate.value = formattedDate;
+
+            // Init FullCalendar
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                height: 'auto',
+                editable: false,
+                selectable: true,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                eventDisplay: 'block',
+                eventDidMount: function(info) {
+                    // Add data attributes to FC rendered events for future dynamic hooks
+                    if (info.el) {
+                        info.el.setAttribute('data-label', 'fc-event');
+                        if (info.event.extendedProps && info.event.extendedProps.meta) {
+                            Object.entries(info.event.extendedProps.meta).forEach(([k, v]) => {
+                                info.el.setAttribute('data-' + k, String(v));
+                            });
+                        }
+                    }
+                }
+            });
+            calendar.render();
+
+            // Add default events on initial load (visible immediately and labeled)
+            (function addDefaultEvents() {
+                const eventsList = document.getElementById('events-list');
+                const calendarEventsWrapper = document.getElementById('calendar-events');
+                const base = new Date();
+                const defs = [
+                    { type: '🫘Planting', description: 'Check soil nutrients and pH', color: 'blue', day: 0 },
+                    { type: '⛏️Fertilization', description: 'Check soil nutrients and pH', color: 'green', day: 4 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 2 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 3 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 5 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 7 },
+                    { type: '🌳Pest Control', description: 'Scout fields for early pest signs', color: 'red', day: 7 }
+                ];
+
+                const toHex = (c) => c === 'blue' ? { bg: '#bfdbfe', border: '#60a5fa' }
+                    : c === 'green' ? { bg: '#bbf7d0', border: '#22c55e' }
+                    : c === 'red' ? { bg: '#fecaca', border: '#ef4444' }
+                    : { bg: '#fef08a', border: '#eab308' };
+
+                const fcEvents = defs.map(ev => {
+                    const d = new Date(base);
+                    d.setDate(base.getDate() + ev.day);
+                    const hex = toHex(ev.color);
+
+                    // Add to Upcoming Events list
+                    const item = document.createElement('div');
+                    item.className = 'bg-white p-4 rounded-lg shadow-sm border-l-4 border-' + ev.color + '-500';
+                    item.setAttribute('data-label', 'event-item');
+                    item.setAttribute('data-event-type', ev.type);
+                    item.setAttribute('data-event-day-offset', String(ev.day));
+                    item.setAttribute('data-event-color', ev.color);
+                    item.setAttribute('data-event-date', d.toISOString());
+                    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    item.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-medium" data-label="event-title">${ev.type}</span>
+                                <p class="text-sm text-gray-600" data-label="event-description">${ev.description}</p>
+                            </div>
+                            <span class="text-sm text-gray-500" data-label="event-date">${dateStr}</span>
+                        </div>
+                    `;
+                    eventsList.appendChild(item);
+
+                    return {
+                        title: ev.type,
+                        start: d.toISOString().split('T')[0],
+                        allDay: true,
+                        backgroundColor: hex.bg,
+                        borderColor: hex.border,
+                        textColor: '#1f2937',
+                        extendedProps: {
+                            sourceType: 'default',
+                            meta: { type: ev.type, color: ev.color, dayOffset: ev.day }
+                        }
+                    };
+                });
+
+                fcEvents.forEach(e => calendar.addEvent(e));
+                calendarEventsWrapper.classList.remove('hidden');
+            })();
+            
+            // Generate calendar button click
+            generateBtn.addEventListener('click', function() {
+                selectedCrop = cropSelect.value;
+                plantingDateValue = plantingDate.value;
+                
+                if (!selectedCrop) {
+                    alert('Please select a crop');
+                    return;
+                }
+                
+                if (!plantingDateValue) {
+                    alert('Please select a planting date');
+                    return;
+                }
+                
+                cropDetails.classList.remove('hidden');
+                calendarEvents.classList.remove('hidden');
+                cropGuide.classList.remove('hidden');
+
+                // Center calendar on planting date
+                try {
+                    calendar.gotoDate(new Date(plantingDateValue));
+                } catch (e) {}
+
+                // Clear previous crop events
+                calendar.getEvents().forEach(ev => {
+                    if (ev.extendedProps && ev.extendedProps.sourceType === 'crop') {
+                        ev.remove();
+                    }
+                });
+
+                // Generate events based on crop and planting date
+                const newEvents = generateEvents(selectedCrop, plantingDateValue);
+                newEvents.forEach(e => calendar.addEvent(e));
+            });
+            
+            // Function to generate upcoming events list
+            function generateEvents(crop, plantingDateStr) {
+                const plantingDate = new Date(plantingDateStr);
+                const eventsList = document.getElementById('events-list');
+                eventsList.innerHTML = '';
+                
+                // Example events for tomato
+                if (crop === 'tomato') {
+                    const events = [
+                        { day: 0, type: 'Planting', description: 'Transplant tomato seedlings to the field', color: 'blue' },
+                        { day: 14, type: 'Fertilization', description: 'Apply balanced fertilizer (10-10-10)', color: 'green' },
+                        { day: 21, type: 'Pest Control', description: 'Apply neem oil for pest prevention', color: 'red' },
+                        { day: 35, type: 'Fertilization', description: 'Side-dress with nitrogen-rich fertilizer', color: 'green' },
+                        { day: 42, type: 'Pest Control', description: 'Monitor for hornworms and apply Bt if needed', color: 'red' },
+                        { day: 60, type: 'Harvest', description: 'Begin harvesting early varieties', color: 'yellow' },
+                        { day: 75, type: 'Harvest', description: 'Main harvest period begins', color: 'yellow' },
+                        { day: 85, type: 'Harvest', description: 'Final harvest before frost', color: 'yellow' }
+                    ];
+                    
+                    events.forEach(event => {
+                        const eventDate = new Date(plantingDate);
+                        eventDate.setDate(plantingDate.getDate() + event.day);
+
+                        const eventItem = document.createElement('div');
+                        eventItem.className = 'bg-white p-4 rounded-lg shadow-sm border-l-4 border-' + event.color + '-500';
+                        eventItem.setAttribute('data-label', 'event-item');
+                        eventItem.setAttribute('data-event-type', event.type);
+                        eventItem.setAttribute('data-event-day-offset', String(event.day));
+                        eventItem.setAttribute('data-event-color', event.color);
+                        eventItem.setAttribute('data-event-date', eventDate.toISOString());
+
+                        const eventDateStr = eventDate.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric' 
+                        });
+
+                        eventItem.innerHTML = `
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <span class="font-medium" data-label="event-title">${event.type}</span>
+                                    <p class="text-sm text-gray-600" data-label="event-description">${event.description}</p>
+                                </div>
+                                <span class="text-sm text-gray-500" data-label="event-date">${eventDateStr}</span>
+                            </div>
+                        `;
+
+                        eventsList.appendChild(eventItem);
+                    });
+
+                    // Return events in FullCalendar format
+                    return events.map(ev => {
+                        const d = new Date(plantingDate);
+                        d.setDate(plantingDate.getDate() + ev.day);
+                        return {
+                            title: ev.type,
+                            start: d.toISOString().split('T')[0],
+                            allDay: true,
+                            backgroundColor: ev.color === 'blue' ? '#bfdbfe' : ev.color === 'green' ? '#bbf7d0' : ev.color === 'red' ? '#fecaca' : '#fef08a',
+                            borderColor: ev.color === 'blue' ? '#60a5fa' : ev.color === 'green' ? '#22c55e' : ev.color === 'red' ? '#ef4444' : '#eab308',
+                            textColor: '#1f2937',
+                            extendedProps: { 
+                                sourceType: 'crop',
+                                meta: {
+                                    type: ev.type,
+                                    color: ev.color,
+                                    dayOffset: ev.day
+                                }
+                            }
+                        };
+                    });
+                }
+
+                return [];
+            }
+        });
+    </script>
+
+    <script>
+        function showTooltip(card) {
+        // Hide all tooltips first
+        document.querySelectorAll(".tooltip").forEach(t => t.classList.add("hidden"));
+    
+        // Show clicked card tooltip
+        const tooltip = card.querySelector(".tooltip");
+        tooltip.classList.remove("hidden");
+    
+        // Auto-hide after 2 seconds
+        setTimeout(() => {
+            tooltip.classList.add("hidden");
+        }, 2000);
+        }
+    </script>
+</body>
+</html>

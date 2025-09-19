@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhetMitra - Market Price</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Row container for 3 dropdowns + search button */
+        .dropdown-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            /* space between dropdowns and button */
+            flex-wrap: wrap;
+            /* responsive for small screens */
+            margin-top: 40px;
+        }
+
+        /* Individual dropdown container */
+        .dropdown-container {
+            position: relative;
+            /* for custom arrow */
+            width: 250px;
+            /* same width for all */
+            margin-bottom: 20px;
+        }
+
+        /* Shared dropdown styling */
+        .dropdown-container select {
+            width: 100%;
+            height: 50px;
+            padding: 0 50px 0 18px;
+            /* keep your original padding */
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Custom arrow for all dropdowns */
+        .dropdown-container::after {
+            content: "▼";
+            font-size: 16px;
+            color: #16a34a;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Focus effect */
+        .dropdown-container select:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+            outline: none;
+        }
+
+        /* Scrollable options for long lists */
+        .search-dropdown {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        /* Search button container */
+        .search-button-container button {
+            height: 50px;
+            padding: 0 25px;
+            border: none;
+            border-radius: 10px;
+            background-color: #16a34a;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .search-button-container button:hover {
+            background-color: #138a38;
+        }
+
+        /* Optional: background, card hover effects from your original CSS */
+        .crop-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .price-up {
+            color: #10B981;
+        }
+
+        .price-down {
+            color: #EF4444;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .crop-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="absolute top-0 left-0 w-full text-white shadow-lg z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="font-bold text-xl">KhetMitra</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="/landing" class="hover:text-yellow-300">Home</a>
+                <a href="/chatbot" class="hover:text-yellow-300">Chatbot</a>
+                <a href="/weatherCrop" class="hover:text-yellow-300">Weather & Crop Calendar</a>
+                <a href="/schemes" class="hover:text-yellow-300">Subsidy Eligibility</a>
+                <a href="/marketPrice" class="text-yellow-300">Market Prices</a>
+            </div>
+            <button class="md:hidden focus:outline-none" id="menu-btn">
+                <i data-feather="menu"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="crop-bg text-white py-20">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4" data-aos="fade-down">Your Daily Market Companion </h1>
+            <p class="text-xl mb-8 max-w-2xl mx-auto" data-aos="fade-up">
+                Track prices of coconut, paddy, banana, and more—straight from Kerala mandis.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Price Highlights -->
+        <div class="mb-12" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i data-feather="trending-up" class="mr-2"></i> Today's Price Highlights
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Price Card 1 -->
+                <div class="bg-white rounded-xl shadow-md p-6 crop-card transition duration-300">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Wheat (Sharbati)</h3>
+                            <p class="text-gray-500 text-sm">Delhi Mandi</p>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Grade A</span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-bold text-gray-800">₹2,450 <span class="price-up text-sm">↑ 5.2%</span>
+                        </p>
+                        <p class="text-gray-500 text-sm mt-1">Avg: ₹2,380 | Min: ₹2,300</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Updated: 10:30 AM</span>
+                        <button class="text-green-600 hover:text-green-800 text-sm font-medium">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Price Card 2 -->
+                <div class="bg-white rounded-xl shadow-md p-6 crop-card transition duration-300">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Basmati Rice</h3>
+                            <p class="text-gray-500 text-sm">Punjab Mandi</p>
+                        </div>
+                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Premium</span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-bold text-gray-800">₹3,750 <span class="price-down text-sm">↓
+                                2.1%</span></p>
+                        <p class="text-gray-500 text-sm mt-1">Avg: ₹3,800 | Min: ₹3,650</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Updated: 11:15 AM</span>
+                        <button class="text-green-600 hover:text-green-800 text-sm font-medium">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Price Card 3 -->
+                <div class="bg-white rounded-xl shadow-md p-6 crop-card transition duration-300">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Potato</h3>
+                            <p class="text-gray-500 text-sm">UP Mandi</p>
+                        </div>
+                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Grade B</span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-bold text-gray-800">₹1,120 <span class="price-up text-sm">↑ 1.8%</span>
+                        </p>
+                        <p class="text-gray-500 text-sm mt-1">Avg: ₹1,100 | Min: ₹1,050</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Updated: 9:45 AM</span>
+                        <button class="text-green-600 hover:text-green-800 text-sm font-medium">View Details</button>
+                    </div>
+                </div>
+
+                <!-- Price Card 4 -->
+                <div class="bg-white rounded-xl shadow-md p-6 crop-card transition duration-300">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800">Tomato</h3>
+                            <p class="text-gray-500 text-sm">AP Mandi</p>
+                        </div>
+                        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">Grade C</span>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-3xl font-bold text-gray-800">₹1,850 <span class="price-up text-sm">↑ 8.3%</span>
+                        </p>
+                        <p class="text-gray-500 text-sm mt-1">Avg: ₹1,750 | Min: ₹1,600</p>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Updated: 10:00 AM</span>
+                        <button class="text-green-600 hover:text-green-800 text-sm font-medium">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dropdown Filter Section -->
+        <!-- <div class="dropdown-container flex justify-center" data-aos="fade-up">
+            <select id="cropSelect" class="border border-gray-300 rounded px-4 py-2">
+                <option value="" disabled selected>Select Crop</option>
+                 <option value="wheat">Wheat (Sharbati)</option>
+                <option value="rice">Rice (Basmati)</option>
+                <option value="maize">Maize</option>
+                <option value="soybean">Soybean</option>
+                <option value="cotton">Cotton</option> 
+            </select>
+        </div>
+        
+        -->
+
+
+
+
+        <div class="dropdown-row" style="display: flex; justify-content: center; gap: 15px; margin-bottom: 20px;">
+            <form action="/marketPrice/search" method="POST" style="display: flex; align-items: center; gap: 15px;">
+
+                <!-- Commodity dropdown -->
+                <div class="dropdown-container">
+                    <select name="commodity" id="cropSelect">
+                        <option value="" selected>Select Crop</option>
+                        <% commodities.forEach(crop=> { %>
+                            <option value="<%= crop %>">
+                                <%= crop %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+                <!-- State dropdown -->
+                <div class="dropdown-container">
+                    <select name="state" id="stateSelect">
+                        <option value="" selected>Select State</option>
+                        <% states.forEach(st=> { %>
+                            <option value="<%= st %>">
+                                <%= st %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+                <!-- District dropdown -->
+                <div class="dropdown-container">
+                    <select name="district" id="districtSelect">
+                        <option value="" selected>Select District</option>
+                        <% districts.forEach(d=> { %>
+                            <option value="<%= d %>">
+                                <%= d %>
+                            </option>
+                            <% }) %>
+                    </select>
+                </div>
+
+                <!-- Search button -->
+                <div class="search-button-container">
+                    <button type="submit"
+                        style="padding: 10px 20px; border-radius: 8px; background: #16a34a; color: white; font-weight: 600; border: none; cursor: pointer;">
+                        Search
+                    </button>
+                </div>
+                
+
+            </form>
+        </div>
+
+        <!-- Table to show results -->
+        <div class="results-container" style="margin-top: 30px;">
+            <% if (results && results.length> 0) { %>
+                <table border="1" cellpadding="10" cellspacing="0"
+                    style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <thead style="background: #16a34a; color: white;">
+                        <tr>
+                            <th>Commodity</th>
+                            <th>State</th>
+                            <th>District</th>
+                            <th>Market</th>
+                            <th>Min Price</th>
+                            <th>Max Price</th>
+                            <th>Modal Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% results.forEach(r=> { %>
+                            <tr>
+                                <td>
+                                    <%= r.commodity %>
+                                </td>
+                                <td>
+                                    <%= r.state %>
+                                </td>
+                                <td>
+                                    <%= r.district %>
+                                </td>
+                                <td>
+                                    <%= r.market %>
+                                </td>
+                                <td class="price-down">
+                                    <%= r.min_price %>
+                                </td>
+                                <td class="price-up">
+                                    <%= r.max_price %>
+                                </td>
+                                <td>
+                                    <%= r.modal_price %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+                <% } else { %>
+                    <p style="text-align: center; margin-top: 20px;">No results found. Please select filters and search.
+                    </p>
+                    <% } %>
+        </div>
+
+        <!-- 🔽 Cascading Dropdown Script -->
+        <script>
+            const cropSelect = document.getElementById("cropSelect");
+            const stateSelect = document.getElementById("stateSelect");
+            const districtSelect = document.getElementById("districtSelect");
+
+            // When crop changes → update states
+            cropSelect.addEventListener("change", async () => {
+                const crop = cropSelect.value;
+                const res = await fetch(`/api/states?commodity=${encodeURIComponent(crop)}`);
+                const states = await res.json();
+
+                stateSelect.innerHTML = `<option value="">Select State</option>`;
+                states.forEach(st => {
+                    stateSelect.innerHTML += `<option value="${st}">${st}</option>`;
+                });
+
+                // reset districts
+                districtSelect.innerHTML = `<option value="">Select District</option>`;
+            });
+
+            // When state changes → update districts (based on crop + state)
+            stateSelect.addEventListener("change", async () => {
+                const crop = cropSelect.value;
+                const state = stateSelect.value;
+                const res = await fetch(`/api/districts?commodity=${encodeURIComponent(crop)}&state=${encodeURIComponent(state)}`);
+                const districts = await res.json();
+
+                districtSelect.innerHTML = `<option value="">Select District</option>`;
+                districts.forEach(d => {
+                    districtSelect.innerHTML += `<option value="${d}">${d}</option>`;
+                });
+            });
+        </script>
+
+
+
+        <!-- Price Trends -->
+        <div class="mb-12" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i data-feather="activity" class="mr-2"></i> Price Trends
+            </h2>
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800"></h3>
+                        <p class="text-gray-500 text-sm"></p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">7D</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">30D</button>
+                        <button class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">90D</button>
+                    </div>
+                </div>
+                <div class="h-64">
+                    <canvas id="priceChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="mb-12" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <i data-feather="award" class="mr-2"></i> Smart Recommendations
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-blue-100 rounded-full mr-4">
+                            <i data-feather="clock" class="text-blue-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Best Selling Time</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Prices expected to rise 8-10% in next 3 days due to festival demand.
+                    </p>
+                    <div class="flex items-center text-sm text-blue-600">
+                        <i data-feather="alert-circle" class="mr-2"></i>
+                        <span>Sell between 15-18 Nov for maximum profit</span>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-green-100 rounded-full mr-4">
+                            <i data-feather="map-pin" class="text-green-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Top Market Pick</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Azadpur Mandi offering ₹150/quintal more than local markets.</p>
+                    <div class="flex items-center text-sm text-green-600">
+                        <i data-feather="check-circle" class="mr-2"></i>
+                        <span>Net profit after transport: ₹95/quintal</span>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6">
+                    <div class="flex items-center mb-4">
+                        <div class="p-3 bg-purple-100 rounded-full mr-4">
+                            <i data-feather="bar-chart-2" class="text-purple-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-800">Storage Advice</h3>
+                    </div>
+                    <p class="text-gray-600 mb-4">Current storage costs outweigh potential price gains.</p>
+                    <div class="flex items-center text-sm text-purple-600">
+                        <i data-feather="alert-triangle" class="mr-2"></i>
+                        <span>Recommend selling now rather than storing</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        KhetMitra
+                    </h3>
+                    <p class="text-green-200">Helping farmers optimize their crops with smart technology and data-driven
+                        insights.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/landing" class="text-green-200 hover:text-white">Home</a></li>
+                        <li><a href="/chatbot" class="text-green-200 hover:text-white">Chatbot</a></li>
+                        <li><a href="/weatherCrop" class="text-green-200 hover:text-white">Weather & Crop Calendar</a>
+                        </li>
+                        <li><a href="/schemes" class="text-green-200 hover:text-white">Subsidy Eligibility</a></li>
+                        <li><a href="/marketPrice" class="text-green-200 hover:text-white">Market Price</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Seasonal Tip</h4>
+                    <p class="text-green-200">
+                        Rainy season is here! Ensure proper drainage in your fields to prevent waterlogging and crop
+                        damage.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+                    <p class="text-green-200">Toll-free: 0000000000</p>
+                    <!-- <p class="text-green-200">support@krishibazaar.in</p> -->
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-green-200">
+                <p>© 2025 KhetMitra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+
+        // Initialize Feather Icons
+        feather.replace();
+
+        // Sample search functionality
+        document.getElementById('cropSearch').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const resultsContainer = document.getElementById('searchResults');
+
+            if (searchTerm.length > 2) {
+                // Simulate search results
+                const crops = ['Wheat', 'Rice', 'Potato', 'Tomato', 'Onion', 'Maize', 'Soybean', 'Cotton'];
+                const filtered = crops.filter(crop => crop.toLowerCase().includes(searchTerm));
+
+                if (filtered.length > 0) {
+                    resultsContainer.innerHTML = filtered.map(crop => `
+                        <div class="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100 last:border-b-0">
+                            <div class="flex items-center">
+                                <i data-feather="search" class="text-gray-500 mr-2"></i>
+                                <span>${crop}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                    resultsContainer.classList.remove('hidden');
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="p-3 text-gray-500">
+                            No results found for "${searchTerm}"
+                        </div>
+                    `;
+                    resultsContainer.classList.remove('hidden');
+                }
+            } else {
+                resultsContainer.classList.add('hidden');
+            }
+        });
+
+        // Close search results when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!document.getElementById('cropSearch').contains(e.target) &&
+                !document.getElementById('searchResults').contains(e.target)) {
+                document.getElementById('searchResults').classList.add('hidden');
+            }
+        });
+
+        // Price Chart
+        const ctx = document.getElementById('priceChart').getContext('2d');
+        const priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Price (₹/quintal)',
+                    data: [2300, 2350, 2400, 2420, 2450, 2430, 2470],
+                    borderColor: '#10B981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        grid: {
+                            drawBorder: false
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

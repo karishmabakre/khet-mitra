@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhetMitra</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs/lib/anime.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .crop-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/images/bg.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.9; }
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(74, 222, 128, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(74, 222, 128, 0.8); }
+        }
+        .orbit-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(74, 222, 128, 0.3);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+        .icon-orbit {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(145deg, #ffffff, #f0fdf4);
+            box-shadow: 0 4px 25px rgba(74, 222, 128, 0.4);
+            transition: all 0.3s ease;
+            animation: float 4s ease-in-out infinite;
+        }
+        .icon-orbit:hover {
+            transform: scale(1.2);
+            box-shadow: 0 8px 35px rgba(74, 222, 128, 0.6);
+        }
+        .glow {
+            filter: drop-shadow(0 0 12px rgba(74, 222, 128, 0.8));
+        }
+        .hero-title {
+            text-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+        }
+        .pulse-button {
+            animation: pulse 2s infinite;
+        }
+        .floating-element {
+            animation: float 6s ease-in-out infinite;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-white to-emerald-50 min-h-screen overflow-x-hidden"></body>
+<nav class="absolute top-0 left-0 w-full text-white shadow-lg z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-xl">KhetMitra</span>
+        </div>
+        <div class="hidden md:flex space-x-6">
+            <a href="/landing" class="text-yellow-300">Home</a>
+            <a href="/chatbot" class="hover:text-yellow-300">Chatbot</a>
+            <a href="/weatherCrop" class="hover:text-yellow-300">Weather & Crop Calendar</a>
+            <a href="/schemes" class="hover:text-yellow-300">Subsidy Eligibility</a>
+            <a href="/marketPrice" class="hover:text-yellow-300">Market Prices</a>
+       <!-- add -->
+  <a href="/login" 
+     class="flex items-center justify-center gap-2 bg-yellow-300 hover:bg-gray-100 text-green-700 font-semibold px-3 py-1.5 rounded-md shadow-sm text-sm">
+    <!-- Icon (User Icon) -->
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+         stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+      <path stroke-linecap="round" stroke-linejoin="round" 
+            d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.5 20.25a8.25 8.25 
+               0 1115 0v.75H4.5v-.75z" />
+    </svg>
+
+  </a>
+
+
+        </div>
+        <button class="md:hidden focus:outline-none" id="menu-btn">
+            <i data-feather="menu"></i>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<header class="crop-bg text-white py-20">
+    <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4" data-aos="fade-down">Smart Farming Solutions</h1>
+        <p class="text-xl mb-8 max-w-2xl mx-auto" data-aos="fade-up">
+            Weather forecasts and personalized crop calendars to optimize your farming activities
+        </p>
+        <!-- <button class="bg-yellow-500 hover:bg-yellow-600 text-green-900 font-bold py-3 px-6 rounded-full shadow-lg transition duration-300" data-aos="zoom-in">
+            Get Started <i data-feather="arrow-right" class="ml-2 inline"></i>
+        </button> -->
+    </div>
+</header>
+
+
+    <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-16 h-16 rounded-full bg-emerald-100 opacity-20 floating-element" style="animation-delay: 0.5s;"></div>
+        <div class="absolute top-1/3 right-1/3 w-24 h-24 rounded-full bg-emerald-200 opacity-15 floating-element" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-1/4 left-1/3 w-20 h-20 rounded-full bg-emerald-100 opacity-15 floating-element" style="animation-delay: 1.5s;"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-12 h-12 rounded-full bg-emerald-200 opacity-20 floating-element" style="animation-delay: 2s;"></div>
+    </div>
+    <div class="container mx-auto px-20 py-12 md:py-24 flex flex-col md:flex-row items-center justify-between">
+        <!-- Left Section - Text Content -->
+        <div class="md:w-1/2 mb-12 md:mb-0" data-aos="fade-right" data-aos-duration="800">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4 hero-title">
+                Your <span class="text-emerald-500 bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-600">AI Farming</span> Companion
+            </h1>
+            <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                KhetMitra revolutionizes agriculture with intelligent insights, crop monitoring, and personalized recommendations for modern farmers.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <button class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105 pulse-button">
+                    <a href="/chatbot" style="text-decoration: none;">Get Started</a>
+                </button>
+            </div>
+            <div class="mt-12 flex items-center gap-4">
+                <!-- <div class="flex -space-x-2">
+                    <img class="w-10 h-10 rounded-full border-2 border-white" src="http://static.photos/people/200x200/1" alt="Farmer 1">
+                    <img class="w-10 h-10 rounded-full border-2 border-white" src="http://static.photos/people/200x200/2" alt="Farmer 2">
+                    <img class="w-10 h-10 rounded-full border-2 border-white" src="http://static.photos/people/200x200/3" alt="Farmer 3">
+                </div> -->
+                <!-- <div>
+                    <p class="text-sm text-gray-500">Trusted by <span class="font-semibold text-emerald-600">10,000+</span> farmers</p>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Right Section - Orbiting Icons -->
+        <div class="md:w-1/2 flex justify-center items-center relative" style="height: 400px;">
+            <!-- Background Rings with Glow -->
+            <div class="orbit-ring" style="width: 320px; height: 320px; animation-delay: 0.2s;"></div>
+            <div class="orbit-ring" style="width: 220px; height: 220px; animation-delay: 0.4s;"></div>
+            <div class="orbit-ring" style="width: 120px; height: 120px; animation-delay: 0.6s;"></div>
+            <div class="absolute inset-0 rounded-full opacity-10" style="box-shadow: inset 0 0 100px rgba(74, 222, 128, 0.2);"></div>
+            
+            <!-- Central Content with Glow -->
+            <div class="absolute flex flex-col items-center justify-center text-center z-10 animate-breathe">
+                <h2 class="text-4xl font-bold text-gray-800 mb-2 hero-title">KhetMitra</h2>
+                <p class="text-emerald-600 font-medium bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 to-emerald-600">AI Agriculture Assistant</p>
+                <div class="absolute -z-10 w-48 h-48 rounded-full bg-emerald-100 opacity-20 blur-xl"></div>
+            </div>
+
+            <!-- Orbiting Icons -->
+            <div id="orbit-container" class="relative w-full h-full">
+                <!-- Icons will be placed here by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Leaves Decoration -->
+    <!-- Decorative Elements -->
+    <div class="absolute top-20 left-10 opacity-20">
+        <i data-feather="leaf" class="w-16 h-16 text-emerald-400"></i>
+    </div>
+    <div class="absolute top-1/3 right-1/4 opacity-15">
+        <i data-feather="sun" class="w-12 h-12 text-yellow-300"></i>
+    </div>
+    <div class="absolute bottom-1/4 left-1/3 opacity-15">
+        <i data-feather="cloud" class="w-14 h-14 text-blue-200"></i>
+    </div>
+
+    <!-- Features Section with Glow Effects -->
+    <section class="py-20 bg-white relative overflow-hidden">
+        <div class="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-emerald-100 opacity-10 blur-3xl"></div>
+        <div class="absolute -bottom-32 -left-32 w-64 h-64 rounded-full bg-emerald-100 opacity-10 blur-3xl"></div>
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Smart Farming Solutions</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Harness the power of AI to optimize your farming operations and maximize yields</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-10">
+                <div class="bg-gradient-to-br from-white to-emerald-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all hover:glow hover:border-emerald-100 hover:border" data-aos="fade-up">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i data-feather="activity" class="w-8 h-8 text-emerald-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Crop Monitoring</h3>
+                    <p class="text-gray-600 text-center">Real-time tracking of crop health with AI-powered analysis and alerts.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-white to-emerald-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all" data-aos="fade-up" data-aos-delay="150">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i data-feather="cloud-rain" class="w-8 h-8 text-emerald-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Weather Insights</h3>
+                    <p class="text-gray-600 text-center">Personalized weather forecasts and irrigation recommendations.</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-white to-emerald-50 p-8 rounded-xl shadow-lg hover:shadow-xl transition-all" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                        <i data-feather="bar-chart-2" class="w-8 h-8 text-emerald-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3 text-center">Yield Prediction</h3>
+                    <p class="text-gray-600 text-center">Accurate yield forecasts based on historical data and current conditions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-20 bg-emerald-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">What KhetMitra Offers Farmers</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">From soil to market, we guide you at every step of farming.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl shadow-md" data-aos="fade-up">
+                    <div class="flex items-center mb-4">
+                        
+                        <div>
+                            <h4 class="font-bold text-gray-800">🌱Crop Advisory</h4>
+                            <p class="text-emerald-500 text-sm"> Smart Crop Guidance</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Personalized suggestions for crop selection, fertilizers, and pest control based on your region."</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="150">
+                    <div class="flex items-center mb-4">
+                       
+                        <div>
+                            <h4 class="font-bold text-gray-800">🌾Soil Testing Support</h4>
+                            <p class="text-emerald-500 text-sm">Soil Health Check</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Get soil nutrient details and customized fertilizer recommendations to boost productivity."</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-4">
+                        
+                        <div>
+                            <h4 class="font-bold text-gray-800">🌦 Weather Alerts</h4>
+                            <p class="text-emerald-500 text-sm">Weather Updates</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Receive accurate forecasts and alerts to plan irrigation, sowing, and harvesting safely."</p>
+                </div>
+
+                <!-- add -->
+                 <div class="bg-white p-8 rounded-xl shadow-md" data-aos="fade-up">
+                    <div class="flex items-center mb-4">
+                        
+                        <div>
+                            <h4 class="font-bold text-gray-800">💧Irrigation Planning</h4>
+                            <p class="text-emerald-500 text-sm">Water-Saving Tips</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Learn efficient irrigation methods like drip and sprinkler systems for better water management."</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="150">
+                    <div class="flex items-center mb-4">
+                       
+                        <div>
+                            <h4 class="font-bold text-gray-800">📅Crop Calendar</h4>
+                            <p class="text-emerald-500 text-sm">Seasonal Crop Calendar</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Get region-specific sowing and harvesting schedules to maximize crop yield."</p>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl shadow-md" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-4">
+                       
+                        <div>
+                            <h4 class="font-bold text-gray-800">📈Market Connect</h4>
+                            <p class="text-emerald-500 text-sm">Real-time Crop Prices</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600">"Check mandi prices, demand trends, and sell your produce at the best rates."</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section with Enhanced Glow -->
+    <!-- <section class="py-20 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-0 left-0 w-full h-full" style="background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.2) 0%, transparent 50%);"></div>
+            <div class="absolute bottom-0 right-0 w-full h-full" style="background: radial-gradient(circle at 80% 70%, rgba(255,255,255,0.2) 0%, transparent 50%);"></div>
+        </div>
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Farming?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Join thousands of farmers who are already benefiting from AI-powered agriculture.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="bg-white text-emerald-600 hover:bg-gray-100 font-semibold py-3 px-8 rounded-full shadow-lg transition-all transform hover:scale-105 glow">
+                    Start Free Trial
+                </button>
+                <button class="border-2 border-white text-white hover:bg-white hover:text-emerald-600 font-semibold py-3 px-8 rounded-full transition-all">
+                    Request Demo
+                </button>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Footer -->
+    <footer class="bg-green-800 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        KhetMitra
+                    </h3>
+                    <p class="text-green-200">Helping farmers optimize their crops with smart technology and data-driven insights.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="/landing" class="text-green-200 hover:text-white">Home</a></li>
+                        <li><a href="/chatbot" class="text-green-200 hover:text-white">Chatbot</a></li>
+                        <li><a href="/weatherCrop" class="text-green-200 hover:text-white">Weather & Crop Calendar</a></li>
+                        <li><a href="/schemes" class="text-green-200 hover:text-white">Subsidy Eligibility</a></li>
+                        <li><a href="/marketPrice" class="text-green-200 hover:text-white">Market Price</a></li>
+
+                  </ul>
+
+                    
+                     
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Smart Farming</h4>
+                    <p class="text-green-200">
+                        Monitor soil moisture regularly. Efficient irrigation saves water and boosts crop yield.
+                    </p>
+                </div>                
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">Connect With Us</h3>
+                    <p class="text-green-200">Toll-free: 0000-000-0000</p>
+                   
+                </div>
+            </div>
+            <div class="border-t border-green-700 mt-8 pt-8 text-center text-green-300">
+                <p>&copy; 2025 KhetMitra. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const orbitContainer = document.getElementById('orbit-container');
+            const centerX = orbitContainer.offsetWidth / 2;
+            const centerY = orbitContainer.offsetHeight / 2;
+            const radius = 150;
+    
+            const icons = [
+                { name: 'sun', color: 'text-yellow-400' },
+                { name: 'droplet', color: 'text-blue-400' },
+                { name: 'thermometer', color: 'text-red-400' },
+                { name: 'bar-chart-2', color: 'text-emerald-400' },
+                { name: 'cloud-rain', color: 'text-blue-500' },
+                { name: 'activity', color: 'text-green-500' }
+            ];
+    
+            // Add orbiting icons
+            icons.forEach((icon, index) => {
+                const angle = (index * (360 / icons.length)) * (Math.PI / 180);
+                const x = centerX + radius * Math.cos(angle) - 30;
+                const y = centerY + radius * Math.sin(angle) - 30;
+    
+                const iconElement = document.createElement('div');
+                iconElement.className = `icon-orbit glow ${icon.color}`;
+                iconElement.style.left = `${x}px`;
+                iconElement.style.top = `${y}px`;
+                iconElement.innerHTML = `<i data-feather="${icon.name}" class="w-6 h-6"></i>`;
+                orbitContainer.appendChild(iconElement);
+    
+                // Animate circular orbit
+                anime({
+                    targets: iconElement,
+                    rotate: '360deg',
+                    duration: 15000,
+                    easing: 'linear',
+                    loop: true,
+                    transformOrigin: `${centerX}px ${centerY}px`
+                });
+            });
+    
+            // Render feather icons after adding them
+            feather.replace();
+    
+            // Update icon positions on resize
+            window.addEventListener('resize', function () {
+                const newCenterX = orbitContainer.offsetWidth / 2;
+                const newCenterY = orbitContainer.offsetHeight / 2;
+    
+                [...orbitContainer.children].forEach((iconElement, index) => {
+                    const angle = (index * (360 / icons.length)) * (Math.PI / 180);
+                    const x = newCenterX + radius * Math.cos(angle) - 30;
+                    const y = newCenterY + radius * Math.sin(angle) - 30;
+    
+                    iconElement.style.left = `${x}px`;
+                    iconElement.style.top = `${y}px`;
+                });
+            });
+    
+            // Breathing animation for central text
+            anime({
+                targets: '.animate-breathe',
+                scale: [1, 1.02],
+                opacity: [0.95, 1],
+                duration: 3000,
+                direction: 'alternate',
+                loop: true,
+                easing: 'easeInOutSine'
+            });
+    
+            // Pulse animation for orbit rings
+            anime({
+                targets: '.orbit-ring',
+                scale: [1, 1.05],
+                opacity: [0.3, 0.5],
+                duration: 4000,
+                direction: 'alternate',
+                loop: true,
+                easing: 'easeInOutSine',
+                delay: anime.stagger(500)
+            });
+        });
+    </script>
+    
+</body>
+</html>

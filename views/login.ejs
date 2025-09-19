@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KhetMitra | Login</title>
+    <link rel="stylesheet" href="/styles/login.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Left side image -->
+        <div class="left-panel">
+          <div class="slider">
+            <div class="slides">
+              <div class="slide active" style="background-image: url('/images/farmers2.jpg');">
+                <div class="overlay-text">
+                  <h2>Capturing Moments,<br>Creating Memories</h2>
+                </div>
+              </div>
+              <div class="slide" style="background-image: url('/images/farm2.jpg');">
+                <div class="overlay-text">
+                  <h2>Bringing Stories<br>to Life</h2>
+                </div>
+              </div>
+              <div class="slide" style="background-image: url('/images/tractor2.jpg');">
+                <div class="overlay-text">
+                  <h2>Every Picture<br>Tells a Story</h2>
+                </div>
+              </div>
+            </div>
+        
+            <!-- Dots -->
+            <div class="dots">
+              <span class="dot active"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          </div>
+        </div>
+         
+        </div>
+
+        <!-- Right side form -->
+        <div class="right-panel">
+            <div class="login-box">
+                <h2>KhetMitra</h2>
+                <p>Login to your account</p>
+                
+                <form action="/login" method="POST">
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                    </div> 
+                    <button type="submit" class="login-btn">Login</button>   
+                </form>
+                <p class="signup-text">Don't have an account? <a href="/signup" target="_blank">Sign Up</a></p>
+
+                <!-- <div class="social-login">
+                    <span>Or register with</span>
+                    <div class="social-buttons">
+                        <button class="google-btn">Google</button>
+                        <button class="apple-btn">Apple</button>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+      const slidesContainer = document.querySelector(".slides");
+      const dots = document.querySelectorAll(".dot");
+      let currentIndex = 0;
+      const totalSlides = dots.length;
+    
+      function showSlide(index) {
+        slidesContainer.style.transform = `translateX(-${index * 100}%)`;
+        dots.forEach(dot => dot.classList.remove("active"));
+        dots[index].classList.add("active");
+      }
+    
+      function nextSlide() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        showSlide(currentIndex);
+      }
+    
+      // Auto-slide every 5s
+      setInterval(nextSlide, 5000);
+    
+      // Dot navigation
+      dots.forEach((dot, i) => {
+        dot.addEventListener("click", () => {
+          currentIndex = i;
+          showSlide(currentIndex);
+        });
+      });
+    
+      // Initialize
+      showSlide(currentIndex);
+    </script>
+</body>
+</html>
