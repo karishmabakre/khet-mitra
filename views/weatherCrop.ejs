@@ -462,25 +462,26 @@
             });
             calendar.render();
 
+            const toHex = (c) => c === 'blue' ? { bg: '#bfdbfe', border: '#60a5fa' }
+                    : c === 'green' ? { bg: '#bbf7d0', border: '#22c55e' }
+                    : c === 'red' ? { bg: '#fecaca', border: '#ef4444' }
+                    : { bg: '#fef08a', border: '#eab308' };
             // Add default events on initial load (visible immediately and labeled)
             (function addDefaultEvents() {
                 const eventsList = document.getElementById('events-list');
                 const calendarEventsWrapper = document.getElementById('calendar-events');
                 const base = new Date();
                 const defs = [
-                    { type: '🫘Planting', description: 'Check soil nutrients and pH', color: 'blue', day: 0 },
-                    { type: '⛏️Fertilization', description: 'Check soil nutrients and pH', color: 'green', day: 4 },
-                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 2 },
-                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 3 },
-                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 5 },
-                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 7 },
-                    { type: '🌳Pest Control', description: 'Scout fields for early pest signs', color: 'red', day: 7 }
+                    // { type: '🫘Planting', description: 'Check soil nutrients and pH', color: 'blue', day: 0 },
+                    // { type: '⛏️Fertilization', description: 'Check soil nutrients and pH', color: 'green', day: 4 },
+                    // { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 2 },
+                    // { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 3 },
+                    // { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 5 },
+                    // { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 7 },
+                    // { type: '🌳Pest Control', description: 'Scout fields for early pest signs', color: 'red', day: 7 }
                 ];
 
-                const toHex = (c) => c === 'blue' ? { bg: '#bfdbfe', border: '#60a5fa' }
-                    : c === 'green' ? { bg: '#bbf7d0', border: '#22c55e' }
-                    : c === 'red' ? { bg: '#fecaca', border: '#ef4444' }
-                    : { bg: '#fef08a', border: '#eab308' };
+                
 
                 const fcEvents = defs.map(ev => {
                     const d = new Date(base);
@@ -526,27 +527,30 @@
             })();
             
             // Generate calendar button click
-            generateBtn.addEventListener('click', function() {
+           generateBtn.addEventListener('click', function() {
                 selectedCrop = cropSelect.value;
-                plantingDateValue = plantingDate.value;
-                
+                plantingDateValue = plantingDate.value; // MM-DD-YYYY
+                 const eventsList = document.getElementById('events-list');
+                const calendarEventsWrapper = document.getElementById('calendar-events');
+
                 if (!selectedCrop) {
                     alert('Please select a crop');
                     return;
                 }
-                
+
                 if (!plantingDateValue) {
                     alert('Please select a planting date');
                     return;
                 }
-                
+
                 cropDetails.classList.remove('hidden');
                 calendarEvents.classList.remove('hidden');
                 cropGuide.classList.remove('hidden');
 
+                const base = new Date(plantingDateValue);
                 // Center calendar on planting date
                 try {
-                    calendar.gotoDate(new Date(plantingDateValue));
+                    calendar.gotoDate(base);
                 } catch (e) {}
 
                 // Clear previous crop events
@@ -556,18 +560,93 @@
                     }
                 });
 
-                // Generate events based on crop and planting date
+                const defs = [
+                    { type: '🫘Planting', description: 'Check soil nutrients and pH', color: 'blue', day: 0 },
+                    { type: '⛏️Fertilization', description: 'Check soil nutrients and pH', color: 'green', day: 4 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 2 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 3 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 5 },
+                    { type: '💧Irrigation', description: 'Inspect and test irrigation system', color: 'green', day: 7 },
+                    { type: '🌳Pest Control', description: 'Scout fields for early pest signs', color: 'red', day: 7 },
+                    { type: '🌳Harvesting', description: 'Scout fields for early pest signs', color: 'yellow', day: 11 }
+                ];
+
+                // ---- Generate static events (defs) relative to planting date ----
+                const fcEvents = defs.map(ev => {
+                    const d = new Date(base);
+                    d.setDate(base.getDate() + ev.day);
+                    console.log(d)
+                    const hex = toHex(ev.color);
+
+                    // Add to Upcoming Events list
+                    const item = document.createElement('div');
+                    item.className = 'bg-white p-4 rounded-lg shadow-sm border-l-4 border-' + ev.color + '-500';
+                    item.setAttribute('data-label', 'event-item');
+                    item.setAttribute('data-event-type', ev.type);
+                    item.setAttribute('data-event-day-offset', String(ev.day));
+                    item.setAttribute('data-event-color', ev.color);
+                    item.setAttribute('data-event-date', d.toISOString());
+                    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    item.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-medium" data-label="event-title">${ev.type}</span>
+                                <p class="text-sm text-gray-600" data-label="event-description">${ev.description}</p>
+                            </div>
+                            <span class="text-sm text-gray-500" data-label="event-date">${dateStr}</span>
+                        </div>
+                    `;
+                    eventsList.appendChild(item);
+
+                    return {
+                        title: ev.type,
+                        start: d.toISOString().split('T')[0],
+                        allDay: true,
+                        backgroundColor: hex.bg,
+                        borderColor: hex.border,
+                        textColor: '#1f2937',
+                        extendedProps: {
+                            sourceType: 'crop', // ✅ mark as crop-generated
+                            meta: { type: ev.type, color: ev.color, dayOffset: ev.day }
+                        }
+                    };
+                });
+
+                // Add to calendar
+                fcEvents.forEach(e => calendar.addEvent(e));
+
+                // ---- Also add crop-specific generated events ----
                 const newEvents = generateEvents(selectedCrop, plantingDateValue);
                 newEvents.forEach(e => calendar.addEvent(e));
             });
             
             // Function to generate upcoming events list
             function generateEvents(crop, plantingDateStr) {
-                const plantingDate = new Date(plantingDateStr);
                 const eventsList = document.getElementById('events-list');
                 eventsList.innerHTML = '';
-                
-                // Example events for tomato
+
+                // ---- Parse "Month Year" (and optional "Day") ----
+                let plantingDate;
+                const parts = plantingDateStr.trim().split(' ');
+                if (parts.length === 2) {
+                    // "October 2078"
+                    const [monthName, yearStr] = parts;
+                    const year = parseInt(yearStr, 10);
+                    const month = new Date(Date.parse(monthName + " 1, " + year)).getMonth();
+                    plantingDate = new Date(year, month, 1);
+                } else if (parts.length === 3) {
+                    // "October 15 2078"
+                    const [monthName, dayStr, yearStr] = parts;
+                    const year = parseInt(yearStr, 10);
+                    const day = parseInt(dayStr, 10);
+                    const month = new Date(Date.parse(monthName + " 1, " + year)).getMonth();
+                    plantingDate = new Date(year, month, day);
+                } else {
+                    console.error("Unsupported date format:", plantingDateStr);
+                    return [];
+                }
+
+                // ✅ Now plantingDate is safe
                 if (crop === 'tomato') {
                     const events = [
                         { day: 0, type: 'Planting', description: 'Transplant tomato seedlings to the field', color: 'blue' },
@@ -579,7 +658,8 @@
                         { day: 75, type: 'Harvest', description: 'Main harvest period begins', color: 'yellow' },
                         { day: 85, type: 'Harvest', description: 'Final harvest before frost', color: 'yellow' }
                     ];
-                    
+
+                    // Build upcoming events list + FullCalendar objects
                     events.forEach(event => {
                         const eventDate = new Date(plantingDate);
                         eventDate.setDate(plantingDate.getDate() + event.day);
@@ -607,11 +687,10 @@
                                 <span class="text-sm text-gray-500" data-label="event-date">${eventDateStr}</span>
                             </div>
                         `;
-
                         eventsList.appendChild(eventItem);
                     });
 
-                    // Return events in FullCalendar format
+                    // Return FullCalendar event objects
                     return events.map(ev => {
                         const d = new Date(plantingDate);
                         d.setDate(plantingDate.getDate() + ev.day);
@@ -619,8 +698,14 @@
                             title: ev.type,
                             start: d.toISOString().split('T')[0],
                             allDay: true,
-                            backgroundColor: ev.color === 'blue' ? '#bfdbfe' : ev.color === 'green' ? '#bbf7d0' : ev.color === 'red' ? '#fecaca' : '#fef08a',
-                            borderColor: ev.color === 'blue' ? '#60a5fa' : ev.color === 'green' ? '#22c55e' : ev.color === 'red' ? '#ef4444' : '#eab308',
+                            backgroundColor: ev.color === 'blue' ? '#bfdbfe' 
+                                        : ev.color === 'green' ? '#bbf7d0' 
+                                        : ev.color === 'red' ? '#fecaca' 
+                                        : '#fef08a',
+                            borderColor: ev.color === 'blue' ? '#60a5fa' 
+                                    : ev.color === 'green' ? '#22c55e' 
+                                    : ev.color === 'red' ? '#ef4444' 
+                                    : '#eab308',
                             textColor: '#1f2937',
                             extendedProps: { 
                                 sourceType: 'crop',
